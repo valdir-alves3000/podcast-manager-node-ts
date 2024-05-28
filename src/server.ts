@@ -1,8 +1,14 @@
 import * as http from "node:http"
-import { getListEpisodes } from './controllers/podcasts-controller'
+import { getFilterEpisodes, getListEpisodes } from './controllers/podcasts-controller'
+import { Routes } from "./routes/routes"
+import { HttpMethod } from "./utils/http-methods"
 
 const server = http.createServer(async (req: http.IncomingMessage, res: http.ServerResponse) => {
-  if (req.method === "GET") { await getListEpisodes(req, res) }
+
+  const [baseUrl,] = req.url?.split("?") as string[]
+
+  if (req.method === HttpMethod.GET && baseUrl === Routes.LIST) { await getListEpisodes(req, res) }
+  if (req.method === HttpMethod.GET && baseUrl === Routes.EPISODE) { await getFilterEpisodes(req, res) }
 })
 
 const PORT = process.env.PORT || 3333
