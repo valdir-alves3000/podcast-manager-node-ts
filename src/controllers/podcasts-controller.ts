@@ -1,22 +1,27 @@
 import { IncomingMessage, ServerResponse } from 'node:http';
+import { PodCastTransferModel } from '../models/podcast-transfer-model';
 import { serviceFilterEpisodes } from '../services/filter-episodes-service';
 import { serviceListEpisodes } from '../services/list-episodes-service';
-import { StatusCode } from '../utils/status-code';
+import { ContentType } from '../utils/content-type';
+
+const HEADERS = {
+  "Content-Type": ContentType.JSON,
+}
 
 export const getListEpisodes = async (req: IncomingMessage, res: ServerResponse) => {
-  const content = await serviceListEpisodes()
+  const content: PodCastTransferModel = await serviceListEpisodes()
 
-  res.writeHead(StatusCode.OK, {
-    "Content-Type": "application/json",
-  });
-  res.end(JSON.stringify(content))
+  res.writeHead(content.statusCode, HEADERS);
+  res.write(JSON.stringify(content.body))
+
+  res.end()
 }
 
 export const getFilterEpisodes = async (req: IncomingMessage, res: ServerResponse) => {
-  const content = await serviceFilterEpisodes(req.url)
+  const content: PodCastTransferModel = await serviceFilterEpisodes(req.url)
 
-  res.writeHead(StatusCode.OK, {
-    "Content-Type": "application/json",
-  });
-  res.end(JSON.stringify(content))
+  res.writeHead(content.statusCode, HEADERS);
+  res.write(JSON.stringify(content.body))
+
+  res.end()
 }
